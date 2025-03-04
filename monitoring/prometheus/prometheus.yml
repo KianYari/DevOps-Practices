@@ -2,11 +2,21 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
+rule_files:
+  - '/etc/prometheus/rules.yml'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - 'alertmanager:9093'
+
 scrape_configs:
   - job_name: 'go-application'
     static_configs:
-      - targets: ['app:8080']  # Using the service name from docker-compose
+      - targets: ['app:8080']
 
-  - job_name: 'prometheus'
+  - job_name: 'go-app'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets:
+        - 'localhost:9090'

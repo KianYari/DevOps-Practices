@@ -72,5 +72,7 @@ func main() {
 		c.JSON(200, messages)
 	})
 
+	ginEngine.GET("error")
+
 	ginEngine.Run(":8080")
 }
