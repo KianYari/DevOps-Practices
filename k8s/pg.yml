@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pg
+  labels:
+    app: pg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pg
+  template:
+    metadata:
+      labels:
+        app: pg
+    spec:
+      containers:
+        - name: pg
+          image: postgres:latest
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: POSTGRES_PASSWORD
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+      volumes:
+        - name: pg-data
+          persistentVolumeClaim:
+            claimName: pg-pv-claim
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pg
+  labels:
+    app: pg
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: pg
+            
