@@ -23,3 +23,9 @@ ghcr-secret:
   --docker-username=$(username) \
   --docker-password=$(token) \
   --dry-run=client -o yaml > k8s/ghcr-secret.yml
+
+
+up:
+	docker compose down
+	docker compose up --build -d
+	docker image prune -f

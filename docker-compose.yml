@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    image: ghcr.io/kianyari/devops
+    container_name: devops_app
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17
+    container_name: devops_db
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+volumes:
+  db_data:
