@@ -8,6 +8,8 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 	"gorm.io/driver/postgres"
+
+	"k8s/metrics"
 )
 
 type Message struct {
@@ -40,7 +42,11 @@ func main() {
 		panic(err)
 	}
 
+	
 	ginEngine := gin.Default()
+	
+	ginEngine.Use(metrics.PrometheusMiddleware())
+	metrics.SetupPrometheusEndpoint(ginEngine)
 
 	ginEngine.POST("/messages", func(c *gin.Context) {
 		var message Message
