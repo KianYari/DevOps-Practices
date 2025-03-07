@@ -52,6 +52,8 @@
               echo "${{ secrets.ENV_FILE }}" > .env
               chmod 644 .env.production
               chmod 644 .env
+
+              ghcrback
               
               docker compose pull
               docker compose down --remove-orphans
