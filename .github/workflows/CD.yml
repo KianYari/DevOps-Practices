@@ -14,7 +14,7 @@
       
         - name: Write env file
           run:
-              echo "{{ secrets.ENV_FILE }}" > .env
+              echo "${{ secrets.ENV_FILE }}" > .env
 
         - name: Set up Docker Buildx
           uses: docker/setup-buildx-action@v2
