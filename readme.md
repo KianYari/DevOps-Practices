@@ -1,3 +1,5 @@
+```bash
+
 docker login ghcr.io
 
 docker compose build
@@ -26,15 +28,16 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 
 helm template ingress-nginx ingress-nginx \
 --repo https://kubernetes.github.io/ingress-nginx \
---version ${CHART_VERSION} \
---namespace ingress-nginx \
-> ./k8s/ingress/controller/nginx/manifests/nginx-ingress.${APP_VERSION}.yml
+--version 4.12.0 \
+--namespace ingress-nginx > ./k8s/ingress/controller/nginx/manifests/nginx-ingress.1.12.0.yml
 
 
 kubectl create namespace ingress-nginx
 
-kubectl apply -f ./k8s/ingress/controller/nginx/manifests/nginx-ingress.${APP_VERSION}.yml
+kubectl apply -f ./k8s/ingress/controller/nginx/manifests/nginx-ingress.1.12.0.yml
 
 sudo kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 443
 
 kubectl apply -f ./k8s/ingress/controller/nginx/features/app.yml
+
+```
