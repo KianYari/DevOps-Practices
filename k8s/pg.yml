@@ -42,10 +42,13 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "1"
+          volumeMounts:
+            - name: pg-data
+              mountPath: /var/lib/postgresql/data
       volumes:
         - name: pg-data
           persistentVolumeClaim:
-            claimName: pg-pv-claim
+            claimName: pg-pvc
 
 ---
 apiVersion: v1
@@ -60,4 +63,3 @@ spec:
       targetPort: 5432
   selector:
     app: pg
-            

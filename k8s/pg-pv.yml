@@ -1,24 +1,15 @@
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pg-pv-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: manual
----
-apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: pg-pv
+  labels:
+    app: postgres
 spec:
+  storageClassName: manual
   capacity:
     storage: 1Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   hostPath:
-    path: /mnt/data
+    path: /data/pgdata
     

@@ -15,12 +15,12 @@ spec:
         app: app
     spec:
       imagePullSecrets:
-        - name: github-registry-secret
+        - name: github-registry
       containers:
         - name: app
           image: ghcr.io/kianyari/k8s:latest
           ports:
-            - containerPort: 7171
+            - containerPort: 8080
           env:
             - name: DB_HOST
               valueFrom:
