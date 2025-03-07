@@ -1,18 +1,3 @@
-create-cluster:
-	kind create cluster --name $(n)
-
-apply:
-	kubectl apply -f k8s/${f}
-des:
-	kubectl describe $(r)
-
-all:
-	kubectl get all
-	kubectl get pv
-	kubectl get pvc
-	kubectl get storageclass
-
-
 build:
 	docker build -t ghcr.io/kianyari/$(n) .
 
@@ -28,9 +13,27 @@ ps:
 	docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
 
 
+
+
 base64:
 		echo -n "$(t)" | base64
 
+
+
+
+
+create-cluster:
+	kind create cluster --name $(n)
+
+apply:
+	kubectl apply -f k8s/${f}
+des:
+	kubectl describe $(r)
+all:
+	kubectl get all
+	kubectl get pv
+	kubectl get pvc
+	kubectl get storageclass
 
 github-registry:
 	kubectl create secret docker-registry github-registry \
@@ -45,17 +48,35 @@ del:
 restart:
 	kubectl rollout restart deployment $(d)
 
-
-pg:
-	kubectl apply -f k8s/pg-pv.yml
-	kubectl apply -f k8s/pg-pvc.yml
-	kubectl apply -f k8s/pg.yml
-
-pg-del:
-	kubectl delete -f k8s/pg.yml
-	kubectl delete -f k8s/pg-pvc.yml
-	kubectl delete -f k8s/pg-pv.yml
-
-
 port-forward:
 	kubectl port-forward service/app 8080:8080
+
+install-nginx-ingress:
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.0/deploy/static/provider/cloud/deploy.yaml
+
+wait-for-nginx-ingress:
+	kubectl wait --namespace ingress-nginx \
+  	--for=condition=ready pod \
+ 	--selector=app.kubernetes.io/component=controller \
+  	--timeout=120s
+
+add-nginx-ingress-to-helm:
+	helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+CHART_VERSION="4.12.0"
+APP_VERSION="1.12.0"
+
+get-nginx-template:
+	helm template ingress-nginx ingress-nginx \
+	--repo https://kubernetes.github.io/ingress-nginx \
+	--version ${CHART_VERSION} \
+	--namespace ingress-nginx \
+	> ./k8s/ingress/controller/nginx/manifests/nginx-ingress.${APP_VERSION}.yml
+
+start-nginx-ingress:
+	kubectl create namespace ingress-nginx
+	kubectl apply -f ./k8s/ingress/controller/nginx/manifests/nginx-ingress.${APP_VERSION}.yml
+
+port-forward-nginx:
+	kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 443
+

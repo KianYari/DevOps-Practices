@@ -20,3 +20,21 @@ kubectl apply -f k8s/pg-pvc.yml
 kubectl apply -f k8s/pg.yml
 
 kubectl apply -f k8s/app.yml
+
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+helm template ingress-nginx ingress-nginx \
+--repo https://kubernetes.github.io/ingress-nginx \
+--version ${CHART_VERSION} \
+--namespace ingress-nginx \
+> ./k8s/ingress/controller/nginx/manifests/nginx-ingress.${APP_VERSION}.yml
+
+
+kubectl create namespace ingress-nginx
+
+kubectl apply -f ./k8s/ingress/controller/nginx/manifests/nginx-ingress.${APP_VERSION}.yml
+
+sudo kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 443
+
+kubectl apply -f ./k8s/ingress/controller/nginx/features/app.yml
