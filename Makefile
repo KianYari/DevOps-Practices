@@ -34,6 +34,7 @@ all:
 	kubectl get pv
 	kubectl get pvc
 	kubectl get storageclass
+	kubectl get secret
 
 github-registry:
 	kubectl create secret docker-registry github-registry \
@@ -60,6 +61,12 @@ wait-for-nginx-ingress:
  	--selector=app.kubernetes.io/component=controller \
   	--timeout=120s
 
+clean-cluster:
+	kubectl delete all --all
+	kubectl delete pvc --all
+	kubectl delete pv --all
+	kubectl delete storageclass --all
+	kubectl get secret -o name | grep -v "github-registry" | xargs kubectl delete
 add-nginx-ingress-to-helm:
 	helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 
