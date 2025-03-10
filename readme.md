@@ -64,6 +64,7 @@ helm upgrade ${releaseName} ${path} --values=${path}
 ```
 ```bash
 helm package app/
+jkndfd
 ```
 ```bash
 helm push app-version oci://ghcr.io/$(username)
