@@ -4,21 +4,35 @@ pipeline {
 
     stages {
 
+        stage("env") {
+            steps {
+                withCredentials([file(credentialsId: 'env', variable: 'ENV')]) {
+                    sh 'cp $ENV .env'
+                    echo ".env file created successfully"
+                }
+            }
+        }
+
+        stage("login to ghcr") {
+            steps {
+                withCredentials(usernamePassword(credentialsId: 'ghcr', passwordVariable: 'GHCR_PASSWORD', usernameVariable: 'GHCR_USERNAME')) {
+                    sh 'echo $GHCR_PASSWORD | docker login ghcr.io -u $GHCR_USERNAME --password-stdin'
+                    echo "login to ghcr successful"
+                }
+            }
+        }
+
         stage("build") {
             steps {
-                echo "building..."
+                sh 'docker compose build'
+                sh ' docker compose push'
+                echo "build successfull"
             }
         }
 
-        stage("push") {
+        stage("connect to server") {
             steps {
-                echo "pushing..."
-            }
-        }
-
-        stage("deploy") {
-            steps {
-                echo "deploying..."
+                withCredentials([sshUserPrivateKey(credentials
             }
         }
     }
