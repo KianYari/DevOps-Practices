@@ -68,3 +68,24 @@ helm package app/
 ```bash
 helm push app-version oci://ghcr.io/$(username)
 ```
+
+
+### Jenkins
+setup Jenkinsfile and setup jenkins container on server
+
+
+### Ansible
+```bash
+ssh-keygen -t rsa -b 4096
+ssh-copy-id user@serverIP
+```
+```bash
+ansible all -i hosts -m ping
+```
+```bash
+ansible-vault create vault.yml
+ansible-vault edit vault.yml
+```
+```bash
+ansible-plyabook -i Ansible/hosts Ansible/playbook.yaml
+```
