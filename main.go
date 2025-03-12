@@ -12,7 +12,7 @@ import (
 	"github.com/getsentry/sentry-go"
   	sentrygin "github.com/getsentry/sentry-go/gin"
 
-	// "k8s/metrics"
+	"k8s/metrics"
 )
 
 type Message struct {
@@ -58,8 +58,8 @@ func main() {
 
 	ginEngine.Use(sentrygin.New(sentrygin.Options{}))
 	
-	// ginEngine.Use(metrics.PrometheusMiddleware())
-	// metrics.SetupPrometheusEndpoint(ginEngine)
+	ginEngine.Use(metrics.PrometheusMiddleware())
+	metrics.SetupPrometheusEndpoint(ginEngine)
 
 	ginEngine.POST("/messages", func(c *gin.Context) {
 		var message Message
@@ -85,8 +85,8 @@ func main() {
 		c.JSON(200, messages)
 	})
 
-	ginEngine.GET("error", func(c *gin.Context) {
-		panic("This is a test error")
+	ginEngine.GET("/error", func(c *gin.Context) {
+		c.JSON(500, gin.H{"error": "This is a test error"})
 	})
 
 

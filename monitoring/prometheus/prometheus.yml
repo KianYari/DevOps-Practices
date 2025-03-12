@@ -9,14 +9,15 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - 'alertmanager:9093'
+          - alertmanager:9093
 
 scrape_configs:
-  - job_name: 'go-application'
+  - job_name: 'node_exporter'
     static_configs:
-      - targets: ['app:8080']
+      - targets: 
+        - node-exporter:9100
 
-  - job_name: 'go-app'
+  - job_name: 'app'
     static_configs:
-      - targets:
-        - 'localhost:9090'
+      - targets: 
+        - app:8080

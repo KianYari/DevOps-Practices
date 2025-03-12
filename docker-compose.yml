@@ -3,7 +3,7 @@ services:
     build: .
     image: ghcr.io/kianyari/devops:main
     container_name: devops_app
-    restart: always
+    restart: unless-stopped
     env_file:
       - ./.env
     ports:
@@ -14,7 +14,7 @@ services:
   db:
     image: postgres:17
     container_name: devops_db
-    restart: always
+    restart: unless-stopped
     env_file:
       - .env
     ports:
@@ -25,7 +25,7 @@ services:
   prometheus:
     image: prom/prometheus:main
     container_name: devops_prometheus
-    restart: always
+    restart: unless-stopped
     ports:
       - "9090:9090"
     volumes:
@@ -37,11 +37,18 @@ services:
       - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
+
+  node-exporter:
+    image: prom/node-exporter:master
+    container_name: devops_node_exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
   
   alertmanager:
     image: prom/alertmanager:main
     container_name: devops_alertmanager
-    restart: always
+    restart: unless-stopped
     ports:
       - "9093:9093"
     volumes:
@@ -54,7 +61,7 @@ services:
   grafana:
     image: grafana/grafana:main
     container_name: devops_grafana
-    restart: always
+    restart: unless-stopped
     ports:
       - "3000:3000"
     depends_on:

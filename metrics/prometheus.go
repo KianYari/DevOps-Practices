@@ -1,11 +1,14 @@
 package metrics
 
 import (
-    "github.com/gin-gonic/gin"
-    "github.com/prometheus/client_golang/prometheus"
-    "github.com/prometheus/client_golang/prometheus/promauto"
-    "github.com/prometheus/client_golang/prometheus/promhttp"
-    "time"
+	"strconv"
+
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
@@ -46,7 +49,7 @@ func PrometheusMiddleware() gin.HandlerFunc {
         method := c.Request.Method
         
         // Increment the requests counter
-        httpRequestsTotal.WithLabelValues(method, route, string(rune(status))).Inc()
+        httpRequestsTotal.WithLabelValues(method, route, strconv.Itoa(status)).Inc()
         
         // Observe the request duration
         httpRequestDuration.WithLabelValues(method, route).Observe(duration)

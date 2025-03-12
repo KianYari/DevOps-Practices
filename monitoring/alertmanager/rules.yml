@@ -1,20 +1,58 @@
 groups:
-- name: go-app
-  rules:
-  - alert: HighRequestLatency
-    expr: http_request_duration_seconds_sum / http_request_duration_seconds_count > 0.5
-    for: 1m
-    labels:
-      severity: warning
-    annotations:
-      summary: "High request latency on {{ $labels.instance }}"
-      description: "Request latency is above 0.5s (current value: {{ $value }}s)"
+  - name: backend
+    rules:
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate detected"
+          description: "More than 5% of HTTP requests are failing with 5xx status codes."
 
-  - alert: HighErrorRate
-    expr: sum(rate(http_requests_total{status=~"5.."}[5m])) by (job) / sum(rate(http_requests_total[5m])) by (job) > 0.01
-    for: 1m
-    labels:
-      severity: critical
-    annotations:
-      summary: "High error rate on {{ $labels.job }}"
-      description: "Error rate is above 1% (current value: {{ $value }})"
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request latency detected"
+          description: "95th percentile request duration exceeds 0.5 seconds."
+  
+  - name: node
+    rules:
+      - alert: NodeDown
+        expr: up{job="node_exporter"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node Exporter is down"
+          description: "Node Exporter is not reachable for more than 5 minutes."
+
+      - alert: HighCPUUsage
+        expr: rate(node_cpu_seconds_total{mode="idle"}[5m]) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage exceeds 90% for more than 5 minutes."
+
+      - alert: HighMemoryUsage
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage exceeds 90% for more than 5 minutes."
+
+      - alert: DiskSpaceLow
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space detected"
+          description: "Disk space usage exceeds 90% for more than 5 minutes."

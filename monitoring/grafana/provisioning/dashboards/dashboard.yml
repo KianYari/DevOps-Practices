@@ -1,11 +1,19 @@
 apiVersion: 1
 
 providers:
-  - name: 'app-dashboard'
+  - name: 'node-exporter'
     orgId: 1
     folder: ''
     type: file
     disableDeletion: false
     editable: true
     options:
-      path: /etc/grafana/dashboards
+      path: /etc/grafana/dashboards/node-exporter.json
+  - name: 'backend'
+    orgId: 1
+    folder: ''
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+     path: /etc/grafana/dashboards/backend.json
