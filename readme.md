@@ -1,6 +1,10 @@
-#### Create Cluster
+## Create Cluster using Kind
 ```bash
 kind create cluster --name $(name)
+```
+## or using minikube
+```bash
+minikube start
 ```
 #### Create ghcr secret inorder to pull form private registry inside k8s cluster
 ```bash
@@ -28,7 +32,7 @@ docker build -t ghcr.io/${username}/app:latest
 ```bash
 kubectl apply -f k8s/app.yml
 ```
-#### Setup Ingress and Nginx Ingress Controller
+## Setup Nginx Ingress Controller using Kind
 ```bash
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 ```
@@ -40,11 +44,15 @@ helm template ingress-nginx ingress-nginx \
 ```
 ```bash
 kubectl create namespace ingress-nginx
-kubectl apply -f ./k8s/ingress/controller/nginx/manifests/nginx-ingress.1.12.0.yml
+kubectl apply -f ./k8s/ingress/controller/nginx/manifests/nginx-ingress.1.12.0.yaml
 ```
 ###### Setup port forwarding for Nginx service
 ```bash
 sudo kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 443
+```
+## or using minikube
+```bash
+minikube addons enable ingress
 ```
 ###### Setup Ingress for app
 ```bash

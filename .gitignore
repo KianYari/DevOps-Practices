@@ -1,5 +1,6 @@
 .env
 k8s/secret.yml
 monitoring/alertmanager/config.yml
-app/templates/secret.yml
 Ansible/vault.yml
+.DS_STORE
+helmChart/values.yaml

@@ -35,6 +35,8 @@ all:
 	kubectl get pvc
 	kubectl get storageclass
 	kubectl get secret
+	kubectl get configmap
+	kubectl get ingress
 
 github-registry:
 	kubectl create secret docker-registry github-registry \
@@ -67,6 +69,16 @@ clean-cluster:
 	kubectl delete pv --all
 	kubectl delete storageclass --all
 	kubectl get secret -o name | grep -v "github-registry" | xargs kubectl delete
+	kubectl delete configmap --all
+
+clean-nginx-ingress:
+	kubectl delete all --all
+	kubectl delete pvc --all
+	kubectl delete pv --all
+	kubectl delete storageclass --all
+	kubectl get secret -o name | grep -v "github-registry" | xargs kubectl delete
+	kubectl delete configmap --all
+
 add-nginx-ingress-to-helm:
 	helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 
