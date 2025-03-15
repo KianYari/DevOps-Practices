@@ -60,6 +60,7 @@
               
               docker compose pull
               docker compose down --remove-orphans
+              docker container prune
               docker compose up -d
               docker image prune -f
 
