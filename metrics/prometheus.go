@@ -12,7 +12,6 @@ import (
 )
 
 var (
-    // Total requests counter
     httpRequestsTotal = promauto.NewCounterVec(
         prometheus.CounterOpts{
             Name: "http_requests_total",
@@ -21,7 +20,6 @@ var (
         []string{"method", "route", "status"},
     )
 
-    // Request duration histogram
     httpRequestDuration = promauto.NewHistogramVec(
         prometheus.HistogramOpts{
             Name:    "http_request_duration_seconds",
@@ -32,31 +30,24 @@ var (
     )
 )
 
-// PrometheusMiddleware is a Gin middleware to collect HTTP metrics
 func PrometheusMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         start := time.Now()
         
-        // Process request
         c.Next()
         
-        // Record metrics after request is processed
         duration := time.Since(start).Seconds()
         status := c.Writer.Status()
         
-        // Extract route pattern - in a real app, you might want to get the route pattern instead of the exact path
         route := c.Request.URL.Path
         method := c.Request.Method
         
-        // Increment the requests counter
         httpRequestsTotal.WithLabelValues(method, route, strconv.Itoa(status)).Inc()
         
-        // Observe the request duration
         httpRequestDuration.WithLabelValues(method, route).Observe(duration)
     }
 }
 
-// SetupPrometheusEndpoint adds the /metrics endpoint to the Gin router
 func SetupPrometheusEndpoint(router *gin.Engine) {
     router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 }
