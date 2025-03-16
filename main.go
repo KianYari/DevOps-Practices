@@ -6,27 +6,26 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"gorm.io/gorm"
 	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
 	"github.com/getsentry/sentry-go"
-  	sentrygin "github.com/getsentry/sentry-go/gin"
 
 	"k8s/metrics"
+	"k8s/websocket"
 )
 
 type Message struct {
-	ID	  	int    `json:"id"`
+	ID      int    `json:"id"`
 	Content string `json:"content"`
 }
 
-
 func main() {
 	if err := sentry.Init(sentry.ClientOptions{
-		Dsn: "https://035fe60ce0f9f9e6b0d9378abd67a269@o4508938459086848.ingest.de.sentry.io/4508938467475536",
-		EnableTracing: true,
+		Dsn:              "https://035fe60ce0f9f9e6b0d9378abd67a269@o4508938459086848.ingest.de.sentry.io/4508938467475536",
+		EnableTracing:    true,
 		TracesSampleRate: 1.0,
-	  }); err != nil {
+	}); err != nil {
 		fmt.Printf("Sentry initialization failed: %v\n", err)
 	}
 
@@ -53,11 +52,10 @@ func main() {
 		panic(err)
 	}
 
-	
 	ginEngine := gin.Default()
 
-	ginEngine.Use(sentrygin.New(sentrygin.Options{}))
-	
+	// ginEngine.Use(sentrygin.New(sentrygin.Options{}))
+
 	ginEngine.Use(metrics.PrometheusMiddleware())
 	metrics.SetupPrometheusEndpoint(ginEngine)
 
@@ -89,6 +87,6 @@ func main() {
 		c.JSON(500, gin.H{"error": "This is a test error"})
 	})
 
-
+	websocket.SetupWSRoutes(ginEngine)
 	ginEngine.Run(":8080")
 }
